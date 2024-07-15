@@ -3,7 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
-const endpoints = require("../endpoints.json");
+const endpointsFile = require("../endpoints.json");
 
 beforeEach(() => {
     return seed(data)
@@ -26,8 +26,18 @@ describe('Incorrect URLs', () => {
 })
 
 describe('GET', () => {
-    describe('api/topics', () => {
-        it('200: should respond 200 status code and an object with slug and description properties', () => {
+    describe('/api', () => {
+        it('200: should respond with a JSON object detailing all available endpoints', () => {
+            return request(app)
+                .get('/api')
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.endpoints).toEqual(endpointsFile)
+                })
+        })
+    })
+    describe('/api/topics', () => {
+        it('200: should respond with an object with slug and description properties', () => {
             return request(app)
             .get("/api/topics")
             .expect(200)
