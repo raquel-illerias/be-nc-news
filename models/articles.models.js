@@ -16,17 +16,6 @@ function fetchArticlesById(article_id) {
 
 function fetchArticles(sortBy) {
 
-  const greenList = [
-    "title", 
-    "article_id", 
-    "topic", 
-    "author", 
-    "created_at", 
-    "votes", 
-    "article_img_url",
-    "comment_count"
-  ]
-
   let queryString = `
     SELECT 
       articles.title, 
