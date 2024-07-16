@@ -14,20 +14,20 @@ afterAll(() => {
 })
 
 describe('Incorrect URLs', () => {
-    it('ALL METHODS 404: responds with an error for an endpoint not found', () => {
+    it('ALL METHODS 404: return an error message for an endpoint not found', () => {
         return request(app)
         .get("/api/invalid-endpoint")
         .expect(404)
         .then(({ body }) => {
-            const {msg} = body;
-            expect(msg).toBe("invalid input");
+            const {message} = body;
+            expect(message).toBe("Invalid input");
         })
     })
 })
 
 describe('GET', () => {
-    describe('/api', () => {
-        it('200: should respond with a JSON object detailing all available endpoints', () => {
+    describe('GET /api', () => {
+        it('200: should return a JSON object detailing all available endpoints', () => {
             return request(app)
                 .get('/api')
                 .expect(200)
@@ -36,13 +36,14 @@ describe('GET', () => {
                 })
         })
     })
-    describe('/api/topics', () => {
-        it('200: should respond with an object with slug and description properties', () => {
+    describe('GET /api/topics', () => {
+        it('200: should return an object with slug and description properties', () => {
             return request(app)
             .get("/api/topics")
             .expect(200)
             .then(({ body }) => {
-              const { topics } = body;    
+              const { topics } = body;   
+
               expect(topics.length).toBe(3);    
               topics.forEach((topic) => {
                 expect(typeof topic.slug).toBe("string");
@@ -50,5 +51,43 @@ describe('GET', () => {
               })
             })
         })
-    })   
+    }) 
+    describe('GET /api/articles/:article_id', () => {
+        it('200: should return the specified article object', () => {
+            return request(app)
+            .get("/api/articles/6")
+            .expect(200)
+            .then(({ body }) => {
+                
+              expect(body).toEqual({article: {
+                article_id: 6,
+                title: "A",
+                topic: "mitch",
+                author: "icellusedkars",
+                body: "Delicious tin of cat food",
+                created_at: "2020-10-18T01:00:00.000Z",
+                votes: 0,
+                article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+              }})
+            })
+        });  
+        it('400: should return an error message when an article_id of an incorrect data type is provided', () => {
+            return request(app)
+            .get("/api/articles/not-a-number")
+            .expect(400)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('Invalid input');
+            })
+        });
+        it('404: should return an error message when provided with a valid article_id that is not found in the database', () => {
+            return request(app)
+            .get("/api/articles/99999999")
+            .expect(404)
+            .then(({ body }) => {
+                const { message } = body;
+                expect(message).toBe('Not found');
+            })
+        })
+    })
 })

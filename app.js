@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const endpoints = require("./endpoints.json")
-const { getTopics } = require("./controllers/topics.controllers.js")
+const { getTopics } = require("./controllers/topics.controllers.js");
+const { getArticlesById } = require("./controllers/articles.controllers.js");
 
 app.use(express.json());
 
@@ -12,11 +13,23 @@ app.get("/api", (req, res, next) => {
 })
 
 app.get("/api/topics", getTopics);
+app.get("/api/articles/:article_id", getArticlesById);
 
 app.all("*", (req, res, next) => {
     res
     .status(404)
-    .send({ msg: "invalid input" })
+    .send({ message: "Invalid input" })
+});
+app.use((err, req, res, next) => {
+    if(err.code === '22P02') {
+        res.status(400).send({ message:'Invalid input' })
+    }
+    next(err);
+});
+app.use((err, req, res, next) => {
+    if(err.status && err.message) {
+        res.status(err.status).send({ message: err.message })
+    }
 })
 
 module.exports = app;
