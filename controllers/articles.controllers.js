@@ -6,8 +6,8 @@ function getArticlesById(req, res, next) {
     .then((article) => {
       res.status(200).send({ article });
     })
-    .catch((error) => {
-      next(error);
+    .catch((err) => {
+      next(err);
     });
 }
 
