@@ -4,8 +4,6 @@ const endpoints = require("./endpoints.json")
 const { getTopics } = require("./controllers/topics.controllers.js");
 const { getArticlesById, getArticles } = require("./controllers/articles.controllers.js");
 
-app.use(express.json());
-
 app.get("/api", (req, res, next) => {
     res
     .status(200)
