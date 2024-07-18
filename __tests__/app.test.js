@@ -4,6 +4,7 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
 const endpointsFile = require("../endpoints.json");
+const { checkIfCommentExists } = require('../models/comments.models');
 
 beforeEach(() => {
     return seed(data)
@@ -320,3 +321,35 @@ describe('PATCH', () => {
         });
     })
 });
+
+describe('DELETE', () => {
+    describe('DELETE /api/comments/:comment_id', () => {
+        it('204: should remove the comment selected by id from the database table', () => {
+            return request(app)
+            .delete('/api/comments/2')
+            .expect(204)
+            .then(() => {
+                return checkIfCommentExists(2)
+                .then((result) => {
+                    expect(result).toBe(false);
+                });
+            });
+        });
+        it('404: should return an error message when comment_id does not exist in the database', () => {
+            return request(app)
+            .delete('/api/comments/999999')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Not found')
+            })
+        })
+        it('400: should return an error message when comment_id is not a number', () => {
+            return request(app)
+            .delete('/api/comments/NaN')
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Invalid input')
+            })
+        })
+    })
+})

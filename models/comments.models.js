@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkIfArticleExists, checkIfCommentExists } = require("./utils.models");
 
 function fetchCommentsByArticleId(articleId) {
     let queryString = `
@@ -26,19 +27,6 @@ function fetchCommentsByArticleId(articleId) {
         });
 }
 
-function checkIfArticleExists(articleId) {
-    let queryString = `
-        SELECT 1
-        FROM articles
-        WHERE article_id = $1
-    `;
-    return db.query(queryString, [articleId]).then(({ rowCount }) => {
-        if (rowCount === 0) {
-            return Promise.reject({ status: 404, message: "Article not found" });
-        }
-    });
-}
-
 function addCommentByArticleId(articleId, author, body) {
     let queryString = `
         INSERT INTO 
@@ -55,8 +43,18 @@ function addCommentByArticleId(articleId, author, body) {
     .then(({ rows }) => {
         return rows[0];
     });
-};
+}
+
+function removeComment(commentId) { 
+    return checkIfCommentExists(commentId)
+    .then((exists) => {
+        if (!exists) {
+            return Promise.reject({ status: 404, message: 'Not found' });
+        } else {
+            return db.query('DELETE FROM comments WHERE comment_id = $1', [commentId]);
+        }
+    });
+}
 
 
-
-module.exports = { fetchCommentsByArticleId, addCommentByArticleId };
+module.exports = { fetchCommentsByArticleId, addCommentByArticleId, removeComment, checkIfCommentExists };
