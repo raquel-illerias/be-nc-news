@@ -49,12 +49,14 @@ function addCommentByArticleId(articleId, author, body) {
     `;
     
     return checkIfArticleExists(articleId)
-        .then(() => {
-            return db.query(queryString, [body, articleId, author]);
-        })
-        .then(({ rows }) => {
-            return rows[0];
-        });
-}
+    .then(() => {
+        return db.query(queryString, [body, articleId, author]);
+    })
+    .then(({ rows }) => {
+        return rows[0];
+    });
+};
+
+
 
 module.exports = { fetchCommentsByArticleId, addCommentByArticleId };

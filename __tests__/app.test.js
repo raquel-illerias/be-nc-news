@@ -231,3 +231,92 @@ describe('POST', () => {
         });    
     })
 })
+
+describe('PATCH', () => {
+    describe('PATCH /api/articles/:article_id', () => {
+        it('200: should return the updated vote count for an article identified by its corresponding article_id', () => {
+            return request(app)
+            .patch('/api/articles/7')
+            .send({ inc_votes: 2})
+            .expect(200)
+            .then(({body: { article }}) => {
+                expect(article).toEqual( {
+                    article_id: 7,
+                    title: "Z",
+                    topic: "mitch",
+                    author: "icellusedkars",
+                    body: "I was hungry.",
+                    created_at: expect.any(String),
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                      votes: 2
+                  })
+            })
+        });
+        it('200: should return the incremented vote count', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 2})
+            .expect(200)
+            .then(({body: { article }}) => {
+                expect(article).toEqual( {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: expect.any(String),
+                    votes: 102,
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                  })
+            })
+        });
+        it('200 should return the decreased vote count when provided with a negative number', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: -2})
+            .expect(200)
+            .then(({body: { article }}) => {
+                expect(article).toEqual( {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: expect.any(String),
+                    votes: 98,
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                  })
+            })
+        });
+        it('400: should return an error message when inc_votes data type is not a number', () => {
+            return request(app)
+            .patch('/api/articles/2')
+            .send({ inc_votes: 'NaN'})
+            .expect(400)
+            .then(({body: { message }}) => {
+                expect(message).toBe('Invalid input')
+            })
+        });
+        it('400: should return an error message when article_id data type is not a number', () => {
+            return request(app)
+            .patch('/api/articles/NaN')
+            .send({ inc_votes: 5 })
+            .expect(400)
+            .then(({body: { message }}) => {
+                expect(message).toBe('Invalid input')
+            })
+        });
+        it('404: should return an error message when article_id is not in the database', () => {
+            return request(app)
+            .patch('/api/articles/999999')
+            .send({ inc_votes: 8 })
+            .expect(404)
+            .then(({body: { message }}) => {
+                expect(message).toBe('Not found')
+            })
+        });
+    })
+});

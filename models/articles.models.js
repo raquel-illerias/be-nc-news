@@ -46,4 +46,24 @@ function fetchArticles(sortBy) {
     })
 }
 
-module.exports = { fetchArticlesById, fetchArticles };
+function updateArticleVotes(votes, articleId) {
+  
+  return fetchArticlesById(articleId)
+    .then(() => {
+      return db
+      .query(
+        'UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *',
+        [votes, articleId]
+      );
+    })
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, message: "Not found" });
+      }
+      return rows[0];
+    })
+}
+
+
+
+module.exports = { fetchArticlesById, fetchArticles, updateArticleVotes };
