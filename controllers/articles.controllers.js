@@ -1,14 +1,14 @@
-const { fetchArticlesById, fetchArticles } = require("../models/articles.models.js");
+const { fetchArticlesById, fetchArticles, updateArticleVotes } = require("../models/articles.models.js");
 
 function getArticlesById(req, res, next) {
-    const { article_id } = req.params;
-    fetchArticlesById(article_id)
-    .then((article) => {
-      res.status(200).send({ article });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  const { article_id } = req.params;
+  fetchArticlesById(article_id)
+  .then((article) => {
+    res.status(200).send({ article });
+  })
+  .catch((err) => {
+    next(err);
+  });
 }
 
 function getArticles(req, res, next) {
@@ -23,4 +23,17 @@ function getArticles(req, res, next) {
   });
 }
 
-module.exports = { getArticlesById, getArticles }
+function patchArticleVotes(req, res, next) {
+  const { inc_votes } = req.body;
+  const { article_id } = req.params;
+
+  updateArticleVotes(inc_votes, article_id)
+  .then((updatedArticle) => {
+    res.status(200).send({ article: updatedArticle });
+  })
+  .catch((err) => {
+    next(err);
+  });
+}
+
+module.exports = { getArticlesById, getArticles, patchArticleVotes }
