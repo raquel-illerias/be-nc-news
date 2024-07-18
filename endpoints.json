@@ -59,6 +59,15 @@
         }
       ]        
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "inserts a comment into the comments database, associating it with an article identified by its unique ID number",
+    "requestFormatExample": {
+    "username": "your_username",
+    "body": "The content of your comment"
+    },
+    "exampleResponse": {
+      "comment": "Your comment has been successfully posted"
+    }
   }
-
 }

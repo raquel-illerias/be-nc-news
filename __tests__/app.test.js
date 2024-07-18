@@ -121,7 +121,7 @@ describe('GET', () => {
             .get('/api/articles/3/comments')
             .expect(200)
             .then(({ body: { comments } }) => {
-                expect(comments.length).toBeGreaterThan(0);
+                expect(comments.length).toEqual(2);
 
                 comments.forEach((comment) => {
                     expect(comment.article_id).toBe(3);
@@ -152,5 +152,82 @@ describe('GET', () => {
                 expect(message).toBe('Invalid input');
           })
         }); 
+    })
+})
+
+describe('POST', () => {
+    describe('POST /api/articles/:article_id/comments', () => {
+        it('201: should return the newly posted comment', () => {
+            const postObj = {
+                username: "butter_bridge",
+                body: "Chocolate is my favourite sweet"
+            }
+            return request(app)
+            .post("/api/articles/2/comments")
+            .send(postObj)
+            .expect(201)
+            .then(({ body: { comment } }) => {
+
+              expect(comment).toEqual({
+                   article_id: 2,
+                   author: "butter_bridge",
+                   body: "Chocolate is my favourite sweet",
+                   comment_id: 19,
+                   created_at: expect.any(String),
+                   votes: 0,
+                });
+            })
+        });
+        it('400: should return an error message when required information is missing', () => {
+            const newComment = {
+                username: "butter_bridge"
+            };
+            return request(app)
+            .post("/api/articles/2/comments")
+            .send(newComment)
+            .expect(400)
+            .then(({body: { message }}) => {
+                expect(message).toBe("Invalid input")
+            })
+        });
+        it('404: should return an error message when provided with a valid article_id that is not found in the database', () => {
+            const newComment = {
+                username: 'butter_bridge',
+                body: 'Hello, this test will throw a 404 error'
+            }
+            return request(app)
+            .post('/api/articles/9999999/comments')
+            .send(newComment)
+            .expect(404)
+            .then(({body: { message }}) => {
+                expect(message).toBe('Article not found')
+            })
+        });
+        it('400: should return an error message when provided with an article_id of an invalid data type', () => {
+            const newComment = {
+                username: 'butter_bridge',
+                body: 'Hi, this test will throw a 400 error'
+            }
+            return request(app)
+            .post('/api/articles/not-a-number/comments')
+            .send(newComment)
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Invalid input')
+            })
+        });
+        it('404: should return an error message when provided with an invalid username', () => {
+            const newComment = {
+                username: 'harry-potter',
+                body: 'Wingardium leviosa! Oh, and this test will throw a 404 error'
+            }
+            return request(app)
+            .post('/api/articles/1/comments')
+            .send(newComment)
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Invalid username')
+             })
+        });    
     })
 })
