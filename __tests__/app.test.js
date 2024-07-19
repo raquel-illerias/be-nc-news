@@ -113,8 +113,44 @@ describe('GET', () => {
                 })
 
                 expect(articles).toBeSortedBy("created_at", { descending: true });
-            });
-        })
+            })
+        });
+    })
+    describe('GET /api/articles?${query}', () => {
+        it("?sort_by= 200: should return an array of all articles ordered by the specified 'sort_by' query", () => {
+            return request(app)
+            .get("/api/articles?sort_by=author")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toHaveLength(13)
+                expect(body.articles).toBeSortedBy('author', {descending: true})
+            })
+        });
+        it("?order= 200: should return an array of all articles ordered by 'asc' or 'desc'", () => {
+            return request(app)
+            .get("/api/articles?sort_by=topic&&order=desc")
+            .expect(200)
+            .then(({body})=> {
+                expect(body.articles).toHaveLength(13)
+                expect(body.articles).toBeSortedBy("topic", { descending: true })
+            })
+        });
+        it("?sort_by=400: should return an error message when the specified column name does not exist in the table", () => {
+            return request(app)
+            .get("/api/articles?sort_by=inexistent-column")
+            .expect(400)
+            .then(({body}) => {
+                expect(body).toEqual({message: "Bad request"})
+            })
+        });
+        it("?order= 400: should return an error message when the 'order' query is not 'asc' or 'desc'", () => {
+            return request(app)
+            .get("/api/articles?order=inexistent-order")
+            .expect(400)
+            .then(({body}) => {
+                expect(body).toEqual({message: "Bad request"})
+            })
+        });        
     })
     describe('GET /api/articles/:article_id/comments', () => {
         it('200: should return an array of comments for the specified article object', () => {
