@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkIfTopicExists } = require("./utils.models");
 
 function fetchArticlesById(article_id) {
   return db
@@ -14,7 +15,7 @@ function fetchArticlesById(article_id) {
   });
 }
 
-function fetchArticles(sortBy = "created_at", order = "desc") {
+function fetchArticles(sortBy = "created_at", order = "desc", topic) {
   const validSortFields = [
     "author",
     "title",
@@ -25,6 +26,14 @@ function fetchArticles(sortBy = "created_at", order = "desc") {
     "article_img_url",
     "comment_count",
   ];
+
+  if (!validSortFields.includes(sortBy)) {
+    return Promise.reject({ status: 400, message: "Bad request" });
+  }
+
+  if (order !== "asc" && order !== "desc") {
+    return Promise.reject({ status: 400, message: "Bad request" });
+  }
 
   const valuesArr = [];
   let queryString = `
@@ -43,30 +52,30 @@ function fetchArticles(sortBy = "created_at", order = "desc") {
       comments
     ON 
       articles.article_id = comments.article_id
-    GROUP BY articles.article_id
   `;
 
-  if (!validSortFields.includes(sortBy)) {
-    return Promise.reject({ status: 400, message: "Bad request" });
-  }
-
-  if (sortBy) {
-    queryString += `ORDER BY ${sortBy} `;
-  }
-
-  if (order === "asc" || order === "desc") {
-    queryString += `${order}`;
+  if (topic) {
+    return checkIfTopicExists(topic).then((result) => {
+      if (!result) {
+        return Promise.reject({ status: 400, message: "Bad request" });
+      } else {
+        queryString += `WHERE topic = $1 `;
+        valuesArr.push(topic);
+        queryString += `GROUP BY articles.article_id `;
+        queryString += `ORDER BY ${sortBy} ${order}`;
+        return db.query(queryString, valuesArr).then(({ rows }) => {
+          return rows;
+        });
+      }
+    });
   } else {
-    return Promise.reject({ status: 400, message: "Bad request" });
+    queryString += `GROUP BY articles.article_id `;
+    queryString += `ORDER BY ${sortBy} ${order}`;
+    return db.query(queryString, valuesArr).then(({ rows }) => {
+      return rows;
+    });
   }
-
-  return db
-  .query(queryString, valuesArr)
-  .then(({ rows }) => {
-    return rows;
-  });
 }
-
 
 function updateArticleVotes(votes, articleId) {
   
@@ -88,4 +97,4 @@ function updateArticleVotes(votes, articleId) {
 
 
 
-module.exports = { fetchArticlesById, fetchArticles, updateArticleVotes }
+module.exports = { fetchArticlesById, fetchArticles, updateArticleVotes, checkIfTopicExists }

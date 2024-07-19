@@ -135,6 +135,17 @@ describe('GET', () => {
                 expect(body.articles).toBeSortedBy("topic", { descending: true })
             })
         });
+        it("?topic= 200: should return all articles that match the specified topic", () => {
+            return request(app)
+              .get("/api/articles?topic=mitch")
+              .expect(200)
+              .then(({ body: { articles } }) => {
+                expect(articles.length).toBe(12);
+                articles.forEach((article) => {
+                  expect(article).toHaveProperty("topic", "mitch");
+                });
+              });
+          });
         it("?sort_by=400: should return an error message when the specified column name does not exist in the table", () => {
             return request(app)
             .get("/api/articles?sort_by=inexistent-column")
@@ -150,7 +161,15 @@ describe('GET', () => {
             .then(({body}) => {
                 expect(body).toEqual({message: "Bad request"})
             })
-        });        
+        });
+        it("?topic= 400: should return an error message when the topic query does not match any value from the database", () => {
+            return request(app)
+            .get("/api/articles?topic=inexistent-value")
+            .expect(400)
+            .then(({body}) => {
+                expect(body).toEqual({message: "Bad request"})
+            })
+        });
     })
     describe('GET /api/articles/:article_id/comments', () => {
         it('200: should return an array of comments for the specified article object', () => {
