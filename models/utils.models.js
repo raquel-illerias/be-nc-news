@@ -20,4 +20,14 @@ function checkIfCommentExists(commentId) {
     });
 }
 
-module.exports = { checkIfArticleExists, checkIfCommentExists }
+function checkIfTopicExists(topic) {  
+    return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+    .then (({rows}) => {
+        if(rows.length === 0) {
+            return false
+        }
+        return true
+    });
+}
+
+module.exports = { checkIfArticleExists, checkIfCommentExists, checkIfTopicExists }

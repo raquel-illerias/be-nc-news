@@ -12,9 +12,9 @@ function getArticlesById(req, res, next) {
 }
 
 function getArticles(req, res, next) {
-  const { order, sort_by } = req.query;
+  const { order, sort_by, topic } = req.query;
 
-  return fetchArticles(sort_by, order)
+  return fetchArticles(sort_by, order, topic)
   .then((articles) => {
     res.status(200).send({ articles });
   })
