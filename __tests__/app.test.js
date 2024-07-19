@@ -154,6 +154,23 @@ describe('GET', () => {
           })
         }); 
     })
+    describe('GET /api/users', () => {
+        it('200: should return an object with username, name and avatar_url properties', () => {
+            return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              const { users } = body;   
+
+              expect(users.length).toBe(4);    
+              users.forEach((user) => {
+                expect(typeof user.username).toBe("string");
+                expect(typeof user.name).toBe("string");
+                expect(typeof user.avatar_url).toBe("string");
+              })
+            })
+        });
+    })
 })
 
 describe('POST', () => {
@@ -235,25 +252,6 @@ describe('POST', () => {
 
 describe('PATCH', () => {
     describe('PATCH /api/articles/:article_id', () => {
-        it('200: should return the updated vote count for an article identified by its corresponding article_id', () => {
-            return request(app)
-            .patch('/api/articles/7')
-            .send({ inc_votes: 2})
-            .expect(200)
-            .then(({body: { article }}) => {
-                expect(article).toEqual( {
-                    article_id: 7,
-                    title: "Z",
-                    topic: "mitch",
-                    author: "icellusedkars",
-                    body: "I was hungry.",
-                    created_at: expect.any(String),
-                    article_img_url:
-                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-                      votes: 2
-                  })
-            })
-        });
         it('200: should return the incremented vote count', () => {
             return request(app)
             .patch('/api/articles/1')
