@@ -1,7 +1,108 @@
-** Northcoders News API
+# Northcoders News API
 
-To clone this project and run it locally, create two .env files: **.env.test** and **.env.development**. Into each, add **PGDATABASE=**, with the correct database name for that environment (see **/db/setup.sql** for the database names).
+This project is a backend application built with Express and PostgreSQL. It provides a RESTful API for a news application, supporting various endpoints for managing articles, comments, topics, and users.
 
---- 
+This project uses Test Driven Development (TDD) with Jest and Jest-sorted. The test suite includes tests for all endpoints, ensuring that the API behaves as expected.
 
-This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+This awesome project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+
+## Hosted Version
+
+You can access the hosted version of the API [here](https://raquel-illerias-be-nc-news.onrender.com/).
+
+## Endpoints
+
+- `GET /api`: Lists all available API endpoints.
+- `GET /api/topics`: Provides a list of all topics with their slugs and descriptions.
+- `GET /api/articles/:article_id`: Retrieves the article with the given `article_id`.
+- `GET /api/articles`: Returns all articles, sorted by date in descending order.
+- `GET /api/articles/:article_id/comments`: Lists all comments for the article with the given `article_id`.
+- `GET /api/users`: Provides details (username, name, avatar_url) for all users.
+- `POST /api/articles/:article_id/comments`: Adds a new comment to the article with the given `article_id` and returns the added comment.
+- `PATCH /api/articles/:article_id`: Adjusts the vote count for the article with the given `article_id` and returns the updated article.
+- `DELETE /api/comments/:comment_id`: Removes the comment with the specified `comment_id`.
+
+
+
+### GET /api/articles Queries
+
+The `GET /api/articles` endpoint supports the following query parameters to filter and sort the articles:
+
+- `sort_by`: Sorts the articles by any valid column (default is `created_at`).
+- `order`: Orders the articles in ascending (`asc`) or descending (`desc`) order (default is `desc`).
+- `topic`: Filters the articles by a specific topic.
+
+Example usage:
+```sh
+GET /api/articles?sort_by=title&order=asc
+```
+
+```sh
+GET /api/articles?topic=coding
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js v14.x.x or higher
+- PostgreSQL v12.x.x or higher
+
+### Installation
+
+1. Clone the repository either by:
+
+    HTTP
+    ```sh
+    git clone https://github.com/raquel-illerias/be-nc-news.git
+    cd be-nc-news
+    ```
+      
+    or SSH
+    ```sh
+    git clone git@github.com:raquel-illerias/be-nc-news.git
+    cd be-nc-news
+    ```
+
+2. Install dependencies:
+    ```sh
+    npm install
+    ```
+
+3. Setup your PostgreSQL databases and seed them:
+    ```sh
+    npm run setup-dbs
+    npm run seed
+    ```
+
+### Environment Variables
+
+You need to create two `.env` files to run the project locally:
+
+- `.env.development`:
+    ```
+    PGDATABASE=nc_news_test    
+    ```
+
+- `.env.test`:
+    ```
+    PGDATABASE=nc_news
+    ```
+
+### Running the Server
+
+Start the development server:
+```sh
+npm start
+```
+
+### Running Tests
+
+```sh
+npm run test
+```
+ 
+
+
+
+
