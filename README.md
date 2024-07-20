@@ -1,10 +1,8 @@
 # Northcoders News API
 
-This project is a backend application built with Express and PostgreSQL. It provides a RESTful API for a news application, supporting various endpoints for managing articles, comments, topics, and users.
+This project is a backend application built with Node.js, Express, and PostgreSQL. It provides a RESTful API for a news application, supporting various endpoints for managing articles, comments, topics, and users. Users can read and post articles, as well as comment on and vote for them.
 
-This project uses Test Driven Development (TDD) with Jest and Jest-sorted. The test suite includes tests for all endpoints, ensuring that the API behaves as expected.
-
-This awesome project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+The project employs Test Driven Development (TDD) using Jest and Jest-sorted. The test suite comprehensively covers all endpoints, ensuring that the API functions as expected.
 
 ## Hosted Version
 
@@ -101,6 +99,10 @@ npm start
 ```sh
 npm run test
 ```
+
+## Additional information
+
+This project was developed as a comprehensive week-long backend review exercise during the Software Development bootcamp at [Northcoders](https://northcoders.com/).
  
 
 
